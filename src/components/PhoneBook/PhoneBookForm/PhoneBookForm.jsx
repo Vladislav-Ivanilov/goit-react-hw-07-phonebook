@@ -1,8 +1,8 @@
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { customAlphabet } from 'nanoid';
-import { getContacts } from '../../Redux/selector';
+
 import { Forma, Wrap, Label, Input, ErrorMes, Btn } from '../PhoneBook.styled';
 import { addContact } from 'components/Redux/contactsOperation';
 
@@ -21,7 +21,6 @@ const initialValues = {
 
 export default function PhoneBookForm() {
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
 
   const handleSubmit = (values, { resetForm }) => {
     const newContact = {
