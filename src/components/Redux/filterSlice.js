@@ -9,5 +9,5 @@ export const filterSlice = createSlice({
   },
 });
 
-export default filterSlice.reducer;
 export const { setContactFilter } = filterSlice.actions;
+export const filterReducer = filterSlice.reducer;

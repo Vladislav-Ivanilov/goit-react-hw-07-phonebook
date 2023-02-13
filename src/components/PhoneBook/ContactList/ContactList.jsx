@@ -1,13 +1,13 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { removeContact } from '../../Redux/contactsSlice';
+
+import { deleteContact } from 'components/Redux/contactsOperation';
 import { List, Item, Name, BtnDel } from '../PhoneBook.styled';
+import { getContacts, getContactsFilter } from 'components/Redux/selector';
 
 export default function ContactList() {
   const dispatch = useDispatch();
-
-  const contacts = useSelector(state => state.contacts.items);
-  const filter = useSelector(state => state.filter);
-
+  const filter = useSelector(getContactsFilter);
+  const contacts = useSelector(getContacts);
   const filteredContacts = () =>
     contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter.toLowerCase())
@@ -15,12 +15,12 @@ export default function ContactList() {
 
   return (
     <List>
-      {filteredContacts().map(({ id, name, number }) => {
+      {filteredContacts().map(({ id, name, phone }) => {
         return (
-          <Item key={number}>
+          <Item key={id}>
             <Name>{name}</Name>
-            <Name>{number}</Name>
-            <BtnDel type="button" onClick={() => dispatch(removeContact(id))}>
+            <Name>{phone}</Name>
+            <BtnDel type="button" onClick={() => dispatch(deleteContact(id))}>
               Delete
             </BtnDel>
           </Item>

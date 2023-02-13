@@ -1,24 +1,50 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { fetchContacts, addContact, deleteContact } from './contactsOperation';
 
 const initialState = {
-  items: JSON.parse(localStorage.getItem('contacts')) ?? [],
+  items: [],
+  isLoading: false,
+  error: null,
+};
+
+const handlePending = state => {
+  state.isLoading = true;
+};
+
+const handleRejected = (state, action) => {
+  state.isLoading = false;
+  state.error = action.payload;
 };
 
 export const contactsSlice = createSlice({
   name: 'contacts',
   initialState,
 
-  reducers: {
-    addContact: (state, action) => {
+  extraReducers: {
+    [fetchContacts.pending]: handlePending,
+    [fetchContacts.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.error = null;
+      state.items = action.payload;
+    },
+    [fetchContacts.rejected]: handleRejected,
+    [addContact.pending]: handleRejected,
+    [addContact.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.error = null;
       state.items.push(action.payload);
     },
-
-    removeContact: (state, action) => {
-      const newArr = state.items.filter(item => item.id !== action.payload);
-      state.items = newArr;
+    [addContact.rejected]: handleRejected,
+    [deleteContact.pending]: handlePending,
+    [deleteContact.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.error = null;
+      state.items = state.items.filter(
+        contact => contact.id !== action.payload.id
+      );
     },
+    [deleteContact.rejected]: handleRejected,
   },
 });
 
-export default contactsSlice.reducer;
-export const { addContact, removeContact } = contactsSlice.actions;
+export const contactsReducer = contactsSlice.reducer;
