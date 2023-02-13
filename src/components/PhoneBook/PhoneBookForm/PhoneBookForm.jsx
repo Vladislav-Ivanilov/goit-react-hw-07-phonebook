@@ -1,8 +1,10 @@
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { useDispatch } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
+import { useDispatch, useSelector } from 'react-redux';
 import { customAlphabet } from 'nanoid';
-
+import { getContacts } from '../../Redux/selector';
 import { Forma, Wrap, Label, Input, ErrorMes, Btn } from '../PhoneBook.styled';
 import { addContact } from 'components/Redux/contactsOperation';
 
@@ -21,6 +23,7 @@ const initialValues = {
 
 export default function PhoneBookForm() {
   const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
 
   const handleSubmit = (values, { resetForm }) => {
     const newContact = {
@@ -29,30 +32,37 @@ export default function PhoneBookForm() {
       phone: values.number,
     };
 
+    if (contacts.find(contact => contact.name === newContact.name)) {
+      return toast.error(`${newContact.name} already exists`);
+    }
+
     dispatch(addContact(newContact));
     resetForm();
   };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      validationSchema={schema}
-    >
-      <Forma>
-        <Wrap>
-          <Label htmlFor="name">Name</Label>
-          <Input name="name" type="text" id="name" />
-          <ErrorMes name="name" component="div"></ErrorMes>
-        </Wrap>
+    <>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={schema}
+      >
+        <Forma>
+          <Wrap>
+            <Label htmlFor="name">Name</Label>
+            <Input name="name" type="text" id="name" />
+            <ErrorMes name="name" component="div"></ErrorMes>
+          </Wrap>
 
-        <Wrap>
-          <Label htmlFor="number">Number</Label>
-          <Input name="number" type="tel" id="number" />
-          <ErrorMes name="number" component="div"></ErrorMes>
-        </Wrap>
-        <Btn type="submit">Add contact</Btn>
-      </Forma>
-    </Formik>
+          <Wrap>
+            <Label htmlFor="number">Number</Label>
+            <Input name="number" type="tel" id="number" />
+            <ErrorMes name="number" component="div"></ErrorMes>
+          </Wrap>
+          <Btn type="submit">Add contact</Btn>
+        </Forma>
+      </Formik>
+      <ToastContainer />
+    </>
   );
 }
